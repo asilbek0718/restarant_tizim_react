@@ -1,0 +1,200 @@
+const fs = require('fs');
+const path = require('path');
+
+const dict = {
+  // General UI
+  '>Search by name...<': `>Nomi bo'yicha qidirish...<`,
+  'placeholder="Search by name..."': `placeholder="Nomi bo'yicha qidirish..."`,
+  '>Search by ID or customer...<': `>ID yoki mijoz bo'yicha qidirish...<`,
+  'placeholder="Search by ID or customer..."': `placeholder="ID yoki mijoz bo'yicha qidirish..."`,
+  '>Search by table number...<': `>Stol raqami bo'yicha qidirish...<`,
+  'placeholder="Search by table number..."': `placeholder="Stol raqami bo'yicha qidirish..."`,
+  '>Search staff...<': `>Xodimlarni qidirish...<`,
+  'placeholder="Search staff..."': `placeholder="Xodimlarni qidirish..."`,
+  '>Search by food name...<': `>Taom nomi bo'yicha qidirish...<`,
+  'placeholder="Search by food name..."': `placeholder="Taom nomi bo'yicha qidirish..."`,
+  '>All Status<': `>Barcha holatlar<`,
+  '>All Zones<': `>Barcha zonalar<`,
+  '>Available<': `>Bo'sh<`,
+  "label: 'Available'": `label: 'Bo'sh'`,
+  '>Occupied<': `>Band<`,
+  "label: 'Occupied'": `label: 'Band'`,
+  '>Reserved<': `>Band qilingan<`,
+  "label: 'Reserved'": `label: 'Band qilingan'`,
+  '>Cleaning<': `>Tozalanmoqda<`,
+  "label: 'Cleaning'": `label: 'Tozalanmoqda'`,
+  '>Maintenance<': `>Ta'mirlanmoqda<`,
+  "label: 'Maintenance'": `label: 'Ta'mirlanmoqda'`,
+  '>Main Hall<': `>Asosiy zal<`,
+  '>Patio<': `>Veranda<`,
+  '>Bar Area<': `>Bar<`,
+  '>VIP Room<': `>VIP xona<`,
+  '>Add Table<': `>Stol qo'shish<`,
+  '>No tables found<': `>Stollar topilmadi<`,
+  '>Try adjusting your filters or add new tables to your restaurant layout.<': `>Filtrlarni o'zgartirib ko'ring yoki restoraningizga yangi stollar qo'shing.<`,
+  '>Upcoming Reservations<': `>Kelgusi band qilishlar<`,
+  '>No upcoming reservations<': `>Kelgusi band qilishlar yo'q<`,
+  '>Guests<': `>Mehmonlar<`,
+  '>Time Seated<': `>Kelgan vaqti<`,
+  '>Current Order<': `>Joriy buyurtma<`,
+  '>Cancel<': `>Bekor qilish<`,
+  '>Confirm<': `>Tasdiqlash<`,
+  '>Date<': `>Sana<`,
+  '>Total Orders<': `>Jami buyurtmalar<`,
+  '>Profit<': `>Foyda<`,
+  '>Download Report<': `>Hisobotni yuklab olish<`,
+  '>No data available<': `>Ma'lumot yo'q<`,
+  '>Revenue Overview<': `>Daromad xulosasi<`,
+  '>Sales by Category<': `>Kategoriya bo'yicha savdo<`,
+  '>Top Selling<': `>Eng ko'p sotilganlar<`,
+  '>Recent Activity<': `>So'nggi faollik<`,
+  '>View All<': `>Barchasini ko'rish<`,
+  '>New Order<': `>Yangi buyurtma<`,
+  '>Payment Received<': `>To'lov qabul qilindi<`,
+  '>via Card<': `>karta orqali<`,
+  '>via Cash<': `>naqd pul<`,
+  '>Add Food Item<': `>Taom qo'shish<`,
+  '>No foods found<': `>Taomlar topilmadi<`,
+  '>Try adjusting your search or category filters.<': `>Qidiruv yoki kategoriya filtrlarini o'zgartirib ko'ring.<`,
+  '>Popular Items<': `>Mashhur taomlar<`,
+  '>Out of Stock<': `>Qolmagan<`,
+  '>Price<': `>Narxi<`,
+  '>Sales<': `>Sotuvlar<`,
+  '>Action<': `>Amal<`,
+  '>Category<': `>Kategoriya<`,
+  '>Active Orders<': `>Faol buyurtmalar<`,
+  '>Pending<': `>Kutilmoqda<`,
+  "label: 'Pending'": `label: 'Kutilmoqda'`,
+  '>Cooking<': `>Pishirilmoqda<`,
+  "label: 'Cooking'": `label: 'Pishirilmoqda'`,
+  '>Ready<': `>Tayyor<`,
+  "label: 'Ready'": `label: 'Tayyor'`,
+  '>Delivered<': `>Yetkazildi<`,
+  "label: 'Delivered'": `label: 'Yetkazildi'`,
+  '>Cancelled<': `>Bekor qilindi<`,
+  "label: 'Cancelled'": `label: 'Bekor qilindi'`,
+  '>Items<': `>Taomlar<`,
+  '>Table<': `>Stol<`,
+  '>Total<': `>Jami<`,
+  '>Order Details<': `>Buyurtma tafsilotlari<`,
+  '>Customer<': `>Mijoz<`,
+  '>Payment Method<': `>To'lov usuli<`,
+  '>Mark as Cooking<': `>Pishirilmoqda deb belgilash<`,
+  '>Mark as Ready<': `>Tayyor deb belgilash<`,
+  '>Mark as Delivered<': `>Yetkazildi deb belgilash<`,
+  '>Cancel Order<': `>Buyurtmani bekor qilish<`,
+  '>Close<': `>Yopish<`,
+  '>No active orders<': `>Faol buyurtmalar yo'q<`,
+  '>Try adjusting your filters to find orders.<': `>Buyurtmalarni topish uchun filtrlarni o'zgartirib ko'ring.<`,
+  '>No orders found<': `>Buyurtmalar topilmadi<`,
+  '>Today<': `>Bugun<`,
+  '>Yesterday<': `>Kecha<`,
+  '>Last 7 Days<': `>So'nggi 7 kun<`,
+  '>This Month<': `>Shu oy<`,
+  '>Performance<': `>Faoliyat<`,
+  '>Attendance<': `>Davomat<`,
+  '>Shift<': `>Smena<`,
+  '>Check In<': `>Kelgan vaqti<`,
+  '>Check Out<': `>Ketgan vaqti<`,
+  '>On Time<': `>Vaqtida<`,
+  '>Late<': `>Kechikdi<`,
+  '>Absent<': `>Kelmagan<`,
+  '>Save Changes<': `>O'zgarishlarni saqlash<`,
+  '>Food Name<': `>Taom nomi<`,
+  '>Description<': `>Tavsif<`,
+  '>Is Available<': `>Mavjud<`,
+  '>Basic Information<': `>Asosiy ma'lumotlar<`,
+  '>Details<': `>Tafsilotlar<`,
+  '>Calories<': `>Kaloriya<`,
+  '>Admin<': `>Admin<`,
+  "label: 'Admin'": `label: 'Admin'`,
+  '>Manager<': `>Menejer<`,
+  "label: 'Manager'": `label: 'Menejer'`,
+  '>Chef<': `>Oshpaz<`,
+  "label: 'Chef'": `label: 'Oshpaz'`,
+  '>Waiter<': `>Ofitsiant<`,
+  "label: 'Waiter'": `label: 'Ofitsiant'`,
+  '>Cashier<': `>Kassir<`,
+  "label: 'Cashier'": `label: 'Kassir'`,
+  '>Add Employee<': `>Xodim qo'shish<`,
+  '>Edit Employee<': `>Xodimni tahrirlash<`,
+  '>Full Name<': `>To'liq ism<`,
+  '>Email<': `>Email<`,
+  '>Phone Number<': `>Telefon raqami<`,
+  '>Role<': `>Rol<`,
+  '>Status<': `>Holat<`,
+  '>Active<': `>Faol<`,
+  '>Inactive<': `>Nofaol<`,
+  '>Recent Orders<': `>So'nggi buyurtmalar<`,
+  '>Total Revenue<': `>Umumiy daromad<`,
+  '>Active Tables<': `>Band stollar<`,
+  '>Avg Service Time<': `>O'rtacha xizmat vaqti<`,
+  '>Last 30 Days<': `>So'nggi 30 kun<`,
+  '>Custom Range<': `>Boshqa davr<`,
+  '>Order Channels<': `>Buyurtma kanallari<`,
+  '>Sales Target<': `>Sotuv maqsadi<`,
+  '>Key Insights<': `>Asosiy ko'rsatkichlar<`,
+  '>Peak Hours<': `>Eng tig'iz vaqtlar<`,
+  '>Waste Alert<': `>Isrof ogohlantirishi<`,
+  '>Save Configuration<': `>Sozlamalarni saqlash<`,
+  '>Discard<': `>Bekor qilish<`,
+  '>Personal Information<': `>Shaxsiy ma'lumotlar<`,
+  '>Security<': `>Xavfsizlik<`,
+  '>Notifications<': `>Bildirishnomalar<`,
+  '>Theme and Appearance<': `>Mavzu va ko'rinish<`,
+  '>Regional Settings<': `>Mintaqaviy sozlamalar<`,
+  '>Billing and Subscription<': `>To'lov va obuna<`,
+  '>Danger Zone<': `>Xavfli hudud<`,
+  '>Reset All Data<': `>Barcha ma'lumotlarni o'chirish<`,
+  '>Delete<': `>O'chirish<`,
+  '>Edit<': `>Tahrirlash<`,
+  '>Filter<': `>Filtr<`,
+  '>Apply<': `>Qo'llash<`,
+  
+  // Specific fallbacks
+  "label: status || 'Unknown'": `label: status || 'Noma'lum'`,
+  'placeholder="Search...': `placeholder="Qidirish...`,
+  '>All Staff<': `>Barcha xodimlar<`,
+  "label: 'All Staff'": `label: 'Barcha xodimlar'`,
+  '>Kitchen<': `>Oshxona<`,
+  "label: 'Kitchen'": `label: 'Oshxona'`,
+  '>Service<': `>Xizmat<`,
+  "label: 'Service'": `label: 'Xizmat'`,
+  '>Administration<': `>Ma'muriyat<`,
+  "label: 'Administration'": `label: 'Ma'muriyat'`,
+  '>Order<': `>Buyurtma<`,
+  '>Payment<': `>To'lov<`,
+  '>System<': `>Tizim<`,
+  '>All Categories<': `>Barcha kategoriyalar<`,
+};
+
+const componentsDir = path.join('c:', 'Users', 'user', 'Desktop', 'restarant_tizim_react', 'src', 'admin', 'components');
+
+function walk(dir) {
+  const files = fs.readdirSync(dir);
+  for (const file of files) {
+    const fullPath = path.join(dir, file);
+    const stat = fs.statSync(fullPath);
+    if (stat.isDirectory()) {
+      walk(fullPath);
+    } else if (fullPath.endsWith('.jsx')) {
+      let content = fs.readFileSync(fullPath, 'utf8');
+      let updated = false;
+      
+      for (const [eng, uzb] of Object.entries(dict)) {
+        if (content.includes(eng)) {
+          content = content.split(eng).join(uzb);
+          updated = true;
+        }
+      }
+
+      if (updated) {
+        fs.writeFileSync(fullPath, content, 'utf8');
+        console.log(`Updated: ${fullPath}`);
+      }
+    }
+  }
+}
+
+walk(componentsDir);
+console.log('Translation complete.');
